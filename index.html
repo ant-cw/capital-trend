@@ -1,10 +1,207 @@
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Capital Trend</title>
-  </head>
-  <body>
-    <h1>Welcome to Capital Trend</h1>
-    <p>This is a placeholder for your news site.</p>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capital Trend - Economic News & Analysis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>Capital Trend</h1>
+                <span class="tagline">Economic Intelligence</span>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#archive" class="nav-link">Article Archive</a></li>
+                    <li><a href="#tools" class="nav-link">Useful Tools</a></li>
+                    <li><a href="#resources" class="nav-link">Resources</a></li>
+                    <li><a href="#about" class="nav-link">About Us</a></li>
+                </ul>
+                <div class="header-controls">
+                    <button class="theme-toggle" id="themeToggle">🌙</button>
+                    <button class="admin-btn" id="adminBtn">Admin</button>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="container">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search articles by title or keyword...">
+                    <button id="searchBtn">🔍</button>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="articles-section">
+                        <h2>Latest Economic News</h2>
+                        <div class="articles-grid" id="articlesGrid">
+                            <!-- Articles will be dynamically loaded here -->
+                        </div>
+                    </div>
+                    
+                    <aside class="sidebar">
+                        <div class="widget">
+                            <h3>Market Summary</h3>
+                            <div class="market-data">
+                                <div class="market-item">
+                                    <span>S&P 500</span>
+                                    <span class="positive">+1.2%</span>
+                                </div>
+                                <div class="market-item">
+                                    <span>NASDAQ</span>
+                                    <span class="positive">+0.8%</span>
+                                </div>
+                                <div class="market-item">
+                                    <span>DOW</span>
+                                    <span class="negative">-0.3%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="widget">
+                            <h3>Trending Topics</h3>
+                            <ul class="trending-list">
+                                <li>Federal Reserve Policy</li>
+                                <li>Inflation Trends</li>
+                                <li>Tech Earnings</li>
+                                <li>Energy Markets</li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- Archive Section -->
+        <section id="archive" class="section">
+            <div class="container">
+                <h2>Article Archive</h2>
+                <div class="archive-filters">
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="markets">Markets</option>
+                        <option value="policy">Policy</option>
+                        <option value="analysis">Analysis</option>
+                        <option value="technology">Technology</option>
+                    </select>
+                    <select id="dateFilter">
+                        <option value="">All Dates</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+                <div class="archive-grid" id="archiveGrid">
+                    <!-- Archive articles will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Other sections placeholders -->
+        <section id="tools" class="section">
+            <div class="container">
+                <h2>Useful Tools</h2>
+                <p>Financial calculators and analysis tools coming soon...</p>
+            </div>
+        </section>
+
+        <section id="resources" class="section">
+            <div class="container">
+                <h2>Resources</h2>
+                <p>Educational materials and market resources coming soon...</p>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="container">
+                <h2>About Capital Trend</h2>
+                <p>Capital Trend is your trusted source for economic news, market analysis, and financial insights. Our team of expert analysts provides comprehensive coverage of global markets and economic trends.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <input type="password" id="passwordInput" placeholder="Enter admin password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-dashboard hidden">
+        <div class="admin-header">
+            <h2>Admin Dashboard</h2>
+            <button id="logoutBtn">Logout</button>
+        </div>
+        
+        <div class="admin-content">
+            <div class="admin-section">
+                <h3>Create New Article</h3>
+                <form id="articleForm">
+                    <input type="text" id="articleTitle" placeholder="Article Title" required>
+                    <select id="articleCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="markets">Markets</option>
+                        <option value="policy">Policy</option>
+                        <option value="analysis">Analysis</option>
+                        <option value="technology">Technology</option>
+                    </select>
+                    <textarea id="articleContent" placeholder="Article content..." rows="10" required></textarea>
+                    
+                    <div class="file-upload-section">
+                        <h4>Attachments</h4>
+                        <div class="upload-group">
+                            <label for="imageUpload">Images (JPG, PNG):</label>
+                            <input type="file" id="imageUpload" accept=".jpg,.jpeg,.png" multiple>
+                        </div>
+                        <div class="upload-group">
+                            <label for="pdfUpload">PDFs:</label>
+                            <input type="file" id="pdfUpload" accept=".pdf" multiple>
+                        </div>
+                        <div class="upload-group">
+                            <label for="docsLink">Google Docs Link:</label>
+                            <input type="url" id="docsLink" placeholder="https://docs.google.com/...">
+                        </div>
+                    </div>
+                    
+                    <div class="attachments-preview" id="attachmentsPreview"></div>
+                    
+                    <button type="submit">Publish Article</button>
+                </form>
+            </div>
+            
+            <div class="admin-section">
+                <h3>Manage Articles</h3>
+                <div id="adminArticlesList">
+                    <!-- Admin articles list will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Capital Trend. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
 </html>
