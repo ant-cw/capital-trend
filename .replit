@@ -1,2 +1,8 @@
 [nix]
 channel = "stable-24_05"
+
+run = """
+git add .
+git commit -m 'auto commit' || echo 'nothing to commit'
+git push
+"""
