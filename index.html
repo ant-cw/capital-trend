@@ -42,6 +42,23 @@
                     <button id="searchBtn">🔍</button>
                 </div>
                 
+                <!-- Firebase Authentication UI -->
+                <div class="auth-section">
+                    <div class="auth-container">
+                        <h3>User Authentication</h3>
+                        <div class="auth-form">
+                            <input type="email" id="authEmail" placeholder="Email" required>
+                            <input type="password" id="authPassword" placeholder="Password" required>
+                            <div class="auth-buttons">
+                                <button id="signUpBtn">Sign Up</button>
+                                <button id="signInBtn">Sign In</button>
+                                <button id="sendVerificationBtn">Send Verification Email</button>
+                            </div>
+                        </div>
+                        <div id="authStatus" class="auth-status"></div>
+                    </div>
+                </div>
+                
                 <div class="content-grid">
                     <div class="articles-section">
                         <h2>Latest Economic News</h2>
@@ -202,6 +219,27 @@
         </div>
     </footer>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDu7ev-f7ZWytLzxa8D0pF6JnMVkg6ssok",
+            authDomain: "capital-trend.firebaseapp.com",
+            projectId: "capital-trend",
+            storageBucket: "capital-trend.firebasestorage.app",
+            messagingSenderId: "84638439495",
+            appId: "1:84638439495:web:bd301d6583bee408483962"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.firebaseAuth = auth;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.sendEmailVerification = sendEmailVerification;
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
