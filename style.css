@@ -109,8 +109,7 @@ body {
     gap: 1rem;
 }
 
-.theme-toggle,
-.admin-btn {
+.theme-toggle {
     background: var(--primary-color);
     color: white;
     border: none;
@@ -121,8 +120,7 @@ body {
     transition: var(--transition);
 }
 
-.theme-toggle:hover,
-.admin-btn:hover {
+.theme-toggle:hover {
     background: var(--secondary-color);
 }
 
