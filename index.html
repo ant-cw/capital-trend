@@ -25,7 +25,6 @@
                 </ul>
                 <div class="header-controls">
                     <button class="theme-toggle" id="themeToggle">🌙</button>
-                    <button class="admin-btn" id="adminBtn">Admin</button>
                     <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
                 </div>
             </nav>
@@ -53,6 +52,7 @@
                                 <button id="signUpBtn">Sign Up</button>
                                 <button id="signInBtn">Sign In</button>
                                 <button id="sendVerificationBtn">Send Verification Email</button>
+                                <button id="signOutBtn">Sign Out</button>
                             </div>
                         </div>
                         <div id="authStatus" class="auth-status"></div>
@@ -148,17 +148,7 @@
         </section>
     </main>
 
-    <!-- Admin Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Admin Login</h2>
-            <form id="loginForm">
-                <input type="password" id="passwordInput" placeholder="Enter admin password" required>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    </div>
+    
 
     <!-- Admin Dashboard -->
     <div id="adminDashboard" class="admin-dashboard hidden">
@@ -221,7 +211,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDu7ev-f7ZWytLzxa8D0pF6JnMVkg6ssok",
@@ -239,6 +229,14 @@
         window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
         window.signInWithEmailAndPassword = signInWithEmailAndPassword;
         window.sendEmailVerification = sendEmailVerification;
+        window.signOutUser = signOut;
+        
+        // Set up auth state listener
+        onAuthStateChanged(auth, (user) => {
+            if (window.handleAuthStateChange) {
+                window.handleAuthStateChange(user);
+            }
+        });
     </script>
     <script src="script.js"></script>
 </body>
