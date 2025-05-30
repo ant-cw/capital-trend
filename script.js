@@ -80,6 +80,11 @@ function setupEventListeners() {
     document.getElementById('pdfUpload').addEventListener('change', handleFileUpload);
     document.getElementById('docsLink').addEventListener('input', handleDocsLink);
     
+    // Firebase Authentication event listeners
+    document.getElementById('signUpBtn').addEventListener('click', signUp);
+    document.getElementById('signInBtn').addEventListener('click', signIn);
+    document.getElementById('sendVerificationBtn').addEventListener('click', sendVerification);
+    
     // Close modal when clicking outside
     window.addEventListener('click', function(e) {
         const modal = document.getElementById('loginModal');
@@ -491,6 +496,87 @@ function truncateText(text, maxLength) {
     return text.substring(0, maxLength) + '...';
 }
 
+// Firebase Authentication Functions
+function signUp() {
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+    
+    if (!email || !password) {
+        showAuthStatus('Please enter both email and password.', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showAuthStatus('Password must be at least 6 characters long.', 'error');
+        return;
+    }
+    
+    window.createUserWithEmailAndPassword(window.firebaseAuth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            showAuthStatus(`Account created successfully! Welcome, ${user.email}`, 'success');
+            clearAuthForm();
+        })
+        .catch((error) => {
+            showAuthStatus(`Sign up failed: ${error.message}`, 'error');
+        });
+}
+
+function signIn() {
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+    
+    if (!email || !password) {
+        showAuthStatus('Please enter both email and password.', 'error');
+        return;
+    }
+    
+    window.signInWithEmailAndPassword(window.firebaseAuth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            showAuthStatus(`Signed in successfully! Welcome back, ${user.email}`, 'success');
+            clearAuthForm();
+        })
+        .catch((error) => {
+            showAuthStatus(`Sign in failed: ${error.message}`, 'error');
+        });
+}
+
+function sendVerification() {
+    const user = window.firebaseAuth.currentUser;
+    
+    if (!user) {
+        showAuthStatus('Please sign in first before sending verification email.', 'error');
+        return;
+    }
+    
+    window.sendEmailVerification(user)
+        .then(() => {
+            showAuthStatus(`Verification email sent to ${user.email}`, 'success');
+        })
+        .catch((error) => {
+            showAuthStatus(`Failed to send verification email: ${error.message}`, 'error');
+        });
+}
+
+function showAuthStatus(message, type) {
+    const statusElement = document.getElementById('authStatus');
+    statusElement.textContent = message;
+    statusElement.className = `auth-status ${type}`;
+    
+    // Auto-hide success messages after 5 seconds
+    if (type === 'success') {
+        setTimeout(() => {
+            statusElement.style.display = 'none';
+        }, 5000);
+    }
+}
+
+function clearAuthForm() {
+    document.getElementById('authEmail').value = '';
+    document.getElementById('authPassword').value = '';
+}
+
 // Export functions for testing (if needed)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -498,6 +584,9 @@ if (typeof module !== 'undefined' && module.exports) {
         filterArchive,
         createArticleHTML,
         formatDate,
-        truncateText
+        truncateText,
+        signUp,
+        signIn,
+        sendVerification
     };
 }
