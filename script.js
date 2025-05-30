@@ -1,6 +1,7 @@
 
 // Global state management
 let currentUser = null;
+let isAdmin = false;
 let articles = [];
 let currentView = 'home';
 let isDarkMode = false;
@@ -50,9 +51,6 @@ function setupEventListeners() {
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     
-    // Admin button
-    document.getElementById('adminBtn').addEventListener('click', showAdminLogin);
-    
     // Search functionality
     document.getElementById('searchBtn').addEventListener('click', handleSearch);
     document.getElementById('searchInput').addEventListener('keypress', function(e) {
@@ -65,14 +63,8 @@ function setupEventListeners() {
     document.getElementById('categoryFilter').addEventListener('change', filterArchive);
     document.getElementById('dateFilter').addEventListener('change', filterArchive);
     
-    // Modal close
-    document.querySelector('.close').addEventListener('click', closeModal);
-    
-    // Login form
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    
     // Admin dashboard
-    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('logoutBtn').addEventListener('click', signOut);
     document.getElementById('articleForm').addEventListener('submit', handleArticleSubmission);
     
     // File upload handling
@@ -84,14 +76,10 @@ function setupEventListeners() {
     document.getElementById('signUpBtn').addEventListener('click', signUp);
     document.getElementById('signInBtn').addEventListener('click', signIn);
     document.getElementById('sendVerificationBtn').addEventListener('click', sendVerification);
+    document.getElementById('signOutBtn').addEventListener('click', signOut);
     
-    // Close modal when clicking outside
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('loginModal');
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    // Make auth state handler globally available
+    window.handleAuthStateChange = handleAuthStateChange;
 }
 
 // Navigation handling
@@ -152,36 +140,41 @@ function checkTheme() {
 }
 
 // Admin functionality
-function showAdminLogin() {
-    document.getElementById('loginModal').style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('loginModal').style.display = 'none';
-}
-
-function handleLogin(e) {
-    e.preventDefault();
-    const password = document.getElementById('passwordInput').value;
-    
-    if (password === 'admin123') {
-        currentUser = 'admin';
-        closeModal();
+function handleAuthStateChange(user) {
+    if (user && user.email === 'kcw01280420@gmail.com') {
+        currentUser = user;
+        isAdmin = true;
         showAdminDashboard();
-        document.getElementById('passwordInput').value = '';
+        showAuthStatus(`Admin access granted. Welcome, ${user.email}`, 'success');
+    } else if (user) {
+        currentUser = user;
+        isAdmin = false;
+        hideAdminDashboard();
+        showAuthStatus(`Signed in as ${user.email}`, 'success');
     } else {
-        alert('Invalid password! Hint: admin123');
+        currentUser = null;
+        isAdmin = false;
+        hideAdminDashboard();
     }
 }
 
 function showAdminDashboard() {
-    document.getElementById('adminDashboard').classList.remove('hidden');
-    loadAdminArticles();
+    if (isAdmin) {
+        document.getElementById('adminDashboard').classList.remove('hidden');
+        loadAdminArticles();
+    }
 }
 
-function logout() {
-    currentUser = null;
+function hideAdminDashboard() {
     document.getElementById('adminDashboard').classList.add('hidden');
+}
+
+function signOut() {
+    window.signOutUser(window.firebaseAuth).then(() => {
+        showAuthStatus('Signed out successfully', 'success');
+    }).catch((error) => {
+        showAuthStatus(`Sign out failed: ${error.message}`, 'error');
+    });
 }
 
 // Article management
@@ -514,7 +507,6 @@ function signUp() {
     window.createUserWithEmailAndPassword(window.firebaseAuth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            showAuthStatus(`Account created successfully! Welcome, ${user.email}`, 'success');
             clearAuthForm();
         })
         .catch((error) => {
@@ -533,8 +525,6 @@ function signIn() {
     
     window.signInWithEmailAndPassword(window.firebaseAuth, email, password)
         .then((userCredential) => {
-            const user = userCredential.user;
-            showAuthStatus(`Signed in successfully! Welcome back, ${user.email}`, 'success');
             clearAuthForm();
         })
         .catch((error) => {
