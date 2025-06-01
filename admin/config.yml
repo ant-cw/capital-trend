@@ -1,9 +1,10 @@
 
 backend:
-  name: github
-  repo: ant-cw/capital-trend
+  name: git-gateway
   branch: main
-  open_authoring: true
+  accept_roles:
+    - admin
+    - editor
 
 # Enable editorial workflow for content approval
 publish_mode: editorial_workflow
@@ -14,6 +15,10 @@ site_url: https://ant-cw.github.io/capital-trend
 # Media files storage
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
+
+# Enable identity widget
+identity:
+  url: https://jovial-unicorn-a9b1c6.netlify.app/.netlify/identity
 
 # Collections define the structure for different content types
 collections:
