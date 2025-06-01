@@ -3,11 +3,13 @@ backend:
   name: github
   repo: ant-cw/capital-trend
   branch: main
-  auth_type: implicit
-  app_id: Ov23liMFJhIgXh0aVpwU
+  open_authoring: true
 
 # Enable editorial workflow for content approval
 publish_mode: editorial_workflow
+
+# Site URL for proper functioning
+site_url: https://ant-cw.github.io/capital-trend
 
 # Media files storage
 media_folder: "assets/uploads"
