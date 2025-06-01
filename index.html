@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Capital Trend - Economic News & Analysis</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -40,7 +41,7 @@
                     <input type="text" id="searchInput" placeholder="Search articles by title or keyword...">
                     <button id="searchBtn">🔍</button>
                 </div>
-                
+
                 <!-- Firebase Authentication UI -->
                 <div class="auth-section">
                     <div class="auth-container">
@@ -58,7 +59,7 @@
                         <div id="authStatus" class="auth-status"></div>
                     </div>
                 </div>
-                
+
                 <div class="content-grid">
                     <div class="articles-section">
                         <h2>Latest Economic News</h2>
@@ -66,7 +67,7 @@
                             <!-- Articles will be dynamically loaded here -->
                         </div>
                     </div>
-                    
+
                     <aside class="sidebar">
                         <div class="widget">
                             <h3>Market Summary</h3>
@@ -85,7 +86,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="widget">
                             <h3>Trending Topics</h3>
                             <ul class="trending-list">
@@ -148,7 +149,7 @@
         </section>
     </main>
 
-    
+
 
     <!-- Admin Dashboard -->
     <div id="adminDashboard" class="admin-dashboard hidden">
@@ -156,7 +157,7 @@
             <h2>Admin Dashboard</h2>
             <button id="logoutBtn">Logout</button>
         </div>
-        
+
         <div class="admin-content">
             <div class="admin-section">
                 <h3>Create New Article</h3>
@@ -170,7 +171,7 @@
                         <option value="technology">Technology</option>
                     </select>
                     <textarea id="articleContent" placeholder="Article content..." rows="10" required></textarea>
-                    
+
                     <div class="file-upload-section">
                         <h4>Attachments</h4>
                         <div class="upload-group">
@@ -186,13 +187,13 @@
                             <input type="url" id="docsLink" placeholder="https://docs.google.com/...">
                         </div>
                     </div>
-                    
+
                     <div class="attachments-preview" id="attachmentsPreview"></div>
-                    
+
                     <button type="submit">Publish Article</button>
                 </form>
             </div>
-            
+
             <div class="admin-section">
                 <h3>Manage Articles</h3>
                 <div id="adminArticlesList">
@@ -205,7 +206,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Capital Trend. All rights reserved.</p>
+            <p>&copy; 2024 Capital Trend. All rights reserved.</p>
         </div>
     </footer>
 
@@ -230,7 +231,7 @@
         window.signInWithEmailAndPassword = signInWithEmailAndPassword;
         window.sendEmailVerification = sendEmailVerification;
         window.signOutUser = signOut;
-        
+
         // Set up auth state listener
         onAuthStateChanged(auth, (user) => {
             if (window.handleAuthStateChange) {
