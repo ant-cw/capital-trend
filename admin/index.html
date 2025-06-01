@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html>
 <head>
@@ -11,23 +10,6 @@
   <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
   
   <script>
-    // Configure Netlify CMS for GitHub Pages with OAuth
-    window.CMS_MANUAL_INIT = true;
-    
-    // Initialize the CMS with GitHub authentication
-    CMS.init({
-      config: {
-        backend: {
-          name: 'github',
-          repo: 'ant-cw/capital-trend',
-          branch: 'main',
-          auth_type: 'implicit',
-          app_id: 'Ov23liMFJhIgXh0aVpwU'
-        },
-        load_config_file: true
-      }
-    });
-    
     // Configure preview styles
     CMS.registerPreviewStyle('/style.css');
   </script>
