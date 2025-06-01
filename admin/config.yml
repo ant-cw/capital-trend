@@ -3,8 +3,8 @@ backend:
   name: github
   repo: ant-cw/capital-trend
   branch: main
-  base_url: https://api.netlify.com
-  auth_endpoint: auth
+  auth_type: implicit
+  app_id: YOUR_GITHUB_OAUTH_APP_CLIENT_ID
 
 # Enable editorial workflow for content approval
 publish_mode: editorial_workflow
