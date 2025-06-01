@@ -6,6 +6,17 @@ let articles = [];
 let currentView = 'home';
 let isDarkMode = false;
 
+// Netlify Identity integration
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on("init", user => {
+    if (!user) {
+      window.netlifyIdentity.on("login", () => {
+        document.location.href = "/admin/";
+      });
+    }
+  });
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
