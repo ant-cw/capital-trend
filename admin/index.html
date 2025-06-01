@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>Capital Trend CMS</title>
     <script src="https://unpkg.com/netlify-cms@2.10.192/dist/netlify-cms.js"></script>
+    <script>
+      // CMS 로딩 오류 감지
+      window.addEventListener('error', function (e) {
+        document.body.innerHTML = '<h2>❌ CMS 로딩 중 오류 발생!</h2><pre>' + e.message + '</pre>';
+      });
+    </script>
   </head>
   <body>
   </body>
