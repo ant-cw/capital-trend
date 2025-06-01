@@ -1,20 +1,60 @@
+
 backend:
   name: github
   repo: ant-cw/capital-trend
   branch: main
-  auth_type: oauth
-  app_id: Ov23liSA51zG7dCwe57Q
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
 
-media_folder: "images/uploads"
-public_folder: "/images/uploads"
+# Enable editorial workflow for content approval
+publish_mode: editorial_workflow
 
+# Media files storage
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+# Collections define the structure for different content types
 collections:
-  - name: "posts"
-    label: "Posts"
-    folder: "posts"
+  - name: "articles"
+    label: "Articles"
+    folder: "content/articles"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - {label: "Layout", name: "layout", widget: "hidden", default: "article"}
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Category", name: "category", widget: "select", options: ["markets", "policy", "analysis", "technology"]}
+      - {label: "Featured Image", name: "thumbnail", widget: "image", required: false}
+      - {label: "Excerpt", name: "excerpt", widget: "text"}
+      - {label: "Body", name: "body", widget: "markdown"}
+      - {label: "Tags", name: "tags", widget: "list", required: false}
+      - {label: "Author", name: "author", widget: "string", default: "Capital Trend"}
+
+  - name: "pages"
+    label: "Pages"
+    files:
+      - label: "About Page"
+        name: "about"
+        file: "content/about.md"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+      - label: "Resources Page"
+        name: "resources"
+        file: "content/resources.md"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "settings"
+    label: "Settings"
+    files:
+      - label: "Site Settings"
+        name: "site"
+        file: "content/settings/site.yml"
+        fields:
+          - {label: "Site Title", name: "title", widget: "string"}
+          - {label: "Site Description", name: "description", widget: "text"}
+          - {label: "Site URL", name: "url", widget: "string"}
+          - {label: "Logo", name: "logo", widget: "image", required: false}
