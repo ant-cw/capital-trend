@@ -1,18 +1,20 @@
 backend:
   name: github
-  repo: ant-cw/capital-trend  #  GitHub 저장소 주소
-  branch: main                # 사용하는 브랜치
+  repo: ant-cw/capital-trend
+  branch: main
+  auth_type: oauth
+  app_id: Ov23liSA51zG7dCwe57Q
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
 
 collections:
   - name: "posts"
-    label: "뉴스 글"
-    folder: "posts"
+    label: "Posts"
+    folder: "_posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - { label: "제목", name: "title", widget: "string" }
-      - { label: "날짜", name: "date", widget: "datetime" }
-      - { label: "본문", name: "body", widget: "markdown" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Body", name: "body", widget: "markdown" }
