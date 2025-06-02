@@ -148,7 +148,19 @@
         </section>
     </main>
 
-
+    <!-- Article Modal -->
+    <div id="articleModal" class="article-modal hidden">
+        <div class="article-modal-content">
+            <div class="article-modal-header">
+                <button class="article-modal-close" id="closeArticleModal">&times;</button>
+            </div>
+            <div class="article-modal-body">
+                <div class="article-meta" id="modalArticleMeta"></div>
+                <h1 id="modalArticleTitle"></h1>
+                <div id="modalArticleContent"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Admin Dashboard -->
     <div id="adminDashboard" class="admin-dashboard hidden">
@@ -239,7 +251,7 @@
         });
     </script>
     <script src="script.js"></script>
-    
+
     <script>
       // Initialize Netlify Identity
       if (window.netlifyIdentity) {
