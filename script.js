@@ -3,6 +3,7 @@
 let currentUser = null;
 let isAdmin = false;
 let articles = [];
+let cmsArticles = [];
 let currentView = 'home';
 let isDarkMode = false;
 
@@ -26,7 +27,7 @@ function initializeApp() {
     loadStoredData();
     setupEventListeners();
     loadSampleArticles();
-    renderArticles();
+    loadCMSArticles();
     checkTheme();
 }
 
@@ -88,6 +89,14 @@ function setupEventListeners() {
     document.getElementById('signInBtn').addEventListener('click', signIn);
     document.getElementById('sendVerificationBtn').addEventListener('click', sendVerification);
     document.getElementById('signOutBtn').addEventListener('click', signOut);
+    
+    // Article modal event listeners
+    document.getElementById('closeArticleModal').addEventListener('click', closeArticleModal);
+    document.getElementById('articleModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeArticleModal();
+        }
+    });
     
     // Make auth state handler globally available
     window.handleAuthStateChange = handleAuthStateChange;
@@ -288,14 +297,28 @@ function removeAttachment(button) {
 // Article rendering
 function renderArticles() {
     const grid = document.getElementById('articlesGrid');
-    const visibleArticles = articles.slice(0, 6); // Show latest 6 articles on home
+    
+    // Combine CMS articles and sample articles
+    const allArticles = [...cmsArticles, ...articles];
+    
+    // Sort by date (newest first)
+    allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    const visibleArticles = allArticles.slice(0, 6); // Show latest 6 articles on home
     
     grid.innerHTML = visibleArticles.map(article => createArticleHTML(article)).join('');
 }
 
 function renderArchive() {
     const grid = document.getElementById('archiveGrid');
-    grid.innerHTML = articles.map(article => createArticleHTML(article)).join('');
+    
+    // Combine CMS articles and sample articles
+    const allArticles = [...cmsArticles, ...articles];
+    
+    // Sort by date (newest first)
+    allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    grid.innerHTML = allArticles.map(article => createArticleHTML(article)).join('');
 }
 
 function createArticleHTML(article) {
@@ -308,15 +331,19 @@ function createArticleHTML(article) {
            </div>`
         : '';
     
+    const clickHandler = article.isCMS ? `onclick="openArticleModal(${JSON.stringify(article).replace(/"/g, '&quot;')})"` : '';
+    
     return `
-        <article class="article-card">
+        <article class="article-card ${article.isCMS ? 'cms-article' : ''}" ${clickHandler}>
             <div class="article-meta">
                 <span class="article-category">${article.category}</span>
                 <span class="article-date">${date}</span>
+                ${article.author && article.isCMS ? `<span class="article-author">By ${article.author}</span>` : ''}
             </div>
             <h3 class="article-title">${article.title}</h3>
             <p class="article-excerpt">${article.excerpt}</p>
             ${attachmentsHTML}
+            ${article.isCMS ? '<div class="cms-badge">CMS Article</div>' : ''}
         </article>
     `;
 }
@@ -379,7 +406,9 @@ function handleSearch() {
         return;
     }
     
-    const filteredArticles = articles.filter(article => 
+    // Search both CMS and sample articles
+    const allArticles = [...cmsArticles, ...articles];
+    const filteredArticles = allArticles.filter(article => 
         article.title.toLowerCase().includes(query) ||
         article.content.toLowerCase().includes(query) ||
         article.category.toLowerCase().includes(query)
@@ -398,7 +427,9 @@ function filterArchive() {
     const categoryFilter = document.getElementById('categoryFilter').value;
     const dateFilter = document.getElementById('dateFilter').value;
     
-    let filteredArticles = [...articles];
+    // Filter both CMS and sample articles
+    const allArticles = [...cmsArticles, ...articles];
+    let filteredArticles = [...allArticles];
     
     // Filter by category
     if (categoryFilter) {
@@ -436,6 +467,112 @@ function filterArchive() {
     if (filteredArticles.length === 0) {
         grid.innerHTML = '<p>No articles found with the selected filters.</p>';
     }
+}
+
+// Load CMS articles from content/articles directory
+async function loadCMSArticles() {
+    try {
+        // GitHub API endpoint for content/articles directory
+        const response = await fetch('https://api.github.com/repos/ant-cw/capital-trend/contents/content/articles');
+        
+        if (!response.ok) {
+            console.log('No CMS articles found, using sample articles only');
+            renderArticles();
+            return;
+        }
+        
+        const files = await response.json();
+        const markdownFiles = files.filter(file => file.name.endsWith('.md') && file.name !== '.gitkeep');
+        
+        const articlePromises = markdownFiles.map(async (file) => {
+            try {
+                const fileResponse = await fetch(file.download_url);
+                const content = await fileResponse.text();
+                return parseMarkdownArticle(content, file.name);
+            } catch (error) {
+                console.error(`Error loading article ${file.name}:`, error);
+                return null;
+            }
+        });
+        
+        const loadedArticles = await Promise.all(articlePromises);
+        cmsArticles = loadedArticles.filter(article => article !== null);
+        
+        // Sort by date (newest first)
+        cmsArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        renderArticles();
+    } catch (error) {
+        console.error('Error loading CMS articles:', error);
+        renderArticles();
+    }
+}
+
+function parseMarkdownArticle(content, filename) {
+    // Split frontmatter and content
+    const parts = content.split('---');
+    let frontmatter = {};
+    let markdownContent = content;
+    
+    if (parts.length >= 3) {
+        const frontmatterText = parts[1];
+        markdownContent = parts.slice(2).join('---');
+        
+        // Parse YAML frontmatter
+        frontmatterText.split('\n').forEach(line => {
+            const [key, ...valueParts] = line.split(':');
+            if (key && valueParts.length > 0) {
+                const value = valueParts.join(':').trim().replace(/^["']|["']$/g, '');
+                frontmatter[key.trim()] = value;
+            }
+        });
+    }
+    
+    // Convert markdown to HTML
+    const htmlContent = marked.parse(markdownContent);
+    
+    // Create excerpt from HTML content
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+    const excerpt = textContent.substring(0, 150) + (textContent.length > 150 ? '...' : '');
+    
+    return {
+        id: filename.replace('.md', ''),
+        title: frontmatter.title || filename.replace('.md', '').replace(/-/g, ' '),
+        category: frontmatter.category || 'news',
+        content: htmlContent,
+        excerpt: excerpt,
+        date: frontmatter.date || new Date().toISOString(),
+        author: frontmatter.author || 'Capital Trend',
+        isCMS: true
+    };
+}
+
+function openArticleModal(article) {
+    const modal = document.getElementById('articleModal');
+    const title = document.getElementById('modalArticleTitle');
+    const content = document.getElementById('modalArticleContent');
+    const meta = document.getElementById('modalArticleMeta');
+    
+    title.textContent = article.title;
+    content.innerHTML = article.content;
+    
+    const date = new Date(article.date).toLocaleDateString();
+    meta.innerHTML = `
+        <span class="article-category">${article.category}</span>
+        <span class="article-date">${date}</span>
+        ${article.author ? `<span class="article-author">By ${article.author}</span>` : ''}
+    `;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeArticleModal() {
+    const modal = document.getElementById('articleModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
 }
 
 // Load sample articles for demonstration
