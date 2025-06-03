@@ -29,6 +29,12 @@ function initializeApp() {
     loadSampleArticles();
     loadCMSArticles();
     checkTheme();
+    
+    // Set up periodic refresh to check for new CMS articles (every 5 minutes)
+    setInterval(() => {
+        console.log('Checking for new CMS articles...');
+        loadCMSArticles();
+    }, 5 * 60 * 1000);
 }
 
 // Load data from localStorage
@@ -472,23 +478,60 @@ function filterArchive() {
 // Load CMS articles from content/articles directory
 async function loadCMSArticles() {
     try {
+        console.log('Loading CMS articles from GitHub...');
+        
         // GitHub API endpoint for content/articles directory
-        const response = await fetch('https://api.github.com/repos/ant-cw/capital-trend/contents/content/articles');
+        const response = await fetch('https://api.github.com/repos/ant-cw/capital-trend/contents/content/articles', {
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+                'User-Agent': 'capital-trend-website'
+            }
+        });
         
         if (!response.ok) {
-            console.log('No CMS articles found, using sample articles only');
+            console.log('GitHub API response not ok:', response.status, response.statusText);
+            if (response.status === 403) {
+                console.log('Rate limit exceeded, trying direct file access...');
+                await loadCMSArticlesDirect();
+                return;
+            }
             renderArticles();
             return;
         }
         
         const files = await response.json();
-        const markdownFiles = files.filter(file => file.name.endsWith('.md') && file.name !== '.gitkeep');
+        console.log('Found files:', files.map(f => f.name));
         
+        // Filter for markdown files only, exclude .gitkeep
+        const markdownFiles = files.filter(file => 
+            file.name.endsWith('.md') && 
+            file.name !== '.gitkeep' && 
+            file.type === 'file'
+        );
+        
+        console.log('Markdown files to load:', markdownFiles.map(f => f.name));
+        
+        if (markdownFiles.length === 0) {
+            console.log('No markdown files found in content/articles/');
+            renderArticles();
+            return;
+        }
+        
+        // Load each markdown file
         const articlePromises = markdownFiles.map(async (file) => {
             try {
+                console.log(`Loading article: ${file.name}`);
                 const fileResponse = await fetch(file.download_url);
+                
+                if (!fileResponse.ok) {
+                    console.error(`Failed to load ${file.name}:`, fileResponse.status);
+                    return null;
+                }
+                
                 const content = await fileResponse.text();
-                return parseMarkdownArticle(content, file.name);
+                const article = parseMarkdownArticle(content, file.name);
+                console.log(`Successfully parsed: ${article.title}`);
+                return article;
             } catch (error) {
                 console.error(`Error loading article ${file.name}:`, error);
                 return null;
@@ -498,55 +541,118 @@ async function loadCMSArticles() {
         const loadedArticles = await Promise.all(articlePromises);
         cmsArticles = loadedArticles.filter(article => article !== null);
         
+        console.log(`Successfully loaded ${cmsArticles.length} CMS articles`);
+        
         // Sort by date (newest first)
         cmsArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
         
         renderArticles();
     } catch (error) {
         console.error('Error loading CMS articles:', error);
-        renderArticles();
+        // Fallback to direct file access
+        await loadCMSArticlesDirect();
     }
 }
 
-function parseMarkdownArticle(content, filename) {
-    // Split frontmatter and content
-    const parts = content.split('---');
-    let frontmatter = {};
-    let markdownContent = content;
-    
-    if (parts.length >= 3) {
-        const frontmatterText = parts[1];
-        markdownContent = parts.slice(2).join('---');
-        
-        // Parse YAML frontmatter
-        frontmatterText.split('\n').forEach(line => {
-            const [key, ...valueParts] = line.split(':');
-            if (key && valueParts.length > 0) {
-                const value = valueParts.join(':').trim().replace(/^["']|["']$/g, '');
-                frontmatter[key.trim()] = value;
+// Fallback method to load known articles directly
+async function loadCMSArticlesDirect() {
+    console.log('Attempting direct file access...');
+    const knownFiles = ['sample-cms-article.md'];
+    const articlePromises = knownFiles.map(async (filename) => {
+        try {
+            const response = await fetch(`https://raw.githubusercontent.com/ant-cw/capital-trend/main/content/articles/${filename}`);
+            if (response.ok) {
+                const content = await response.text();
+                return parseMarkdownArticle(content, filename);
             }
-        });
+        } catch (error) {
+            console.error(`Error loading ${filename}:`, error);
+        }
+        return null;
+    });
+    
+    const loadedArticles = await Promise.all(articlePromises);
+    cmsArticles = loadedArticles.filter(article => article !== null);
+    
+    // Sort by date (newest first)
+    cmsArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    renderArticles();
+}
+
+function parseMarkdownArticle(content, filename) {
+    try {
+        // Split frontmatter and content
+        const parts = content.split('---');
+        let frontmatter = {};
+        let markdownContent = content;
+        
+        // Check if content has frontmatter (starts with ---)
+        if (content.startsWith('---') && parts.length >= 3) {
+            const frontmatterText = parts[1];
+            markdownContent = parts.slice(2).join('---').trim();
+            
+            // Parse YAML frontmatter
+            frontmatterText.split('\n').forEach(line => {
+                const colonIndex = line.indexOf(':');
+                if (colonIndex > 0) {
+                    const key = line.substring(0, colonIndex).trim();
+                    const value = line.substring(colonIndex + 1).trim().replace(/^["']|["']$/g, '');
+                    if (key && value) {
+                        frontmatter[key] = value;
+                    }
+                }
+            });
+        }
+        
+        // Ensure marked is available
+        if (typeof marked === 'undefined') {
+            console.error('Marked library not loaded');
+            return null;
+        }
+        
+        // Convert markdown to HTML
+        const htmlContent = marked.parse(markdownContent);
+        
+        // Create excerpt from HTML content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const textContent = tempDiv.textContent || tempDiv.innerText || '';
+        const excerpt = textContent.substring(0, 150) + (textContent.length > 150 ? '...' : '');
+        
+        // Generate a readable title from filename if not provided
+        const defaultTitle = filename
+            .replace('.md', '')
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, l => l.toUpperCase());
+        
+        // Parse date more robustly
+        let articleDate = new Date().toISOString();
+        if (frontmatter.date) {
+            const parsedDate = new Date(frontmatter.date);
+            if (!isNaN(parsedDate.getTime())) {
+                articleDate = parsedDate.toISOString();
+            }
+        }
+        
+        const article = {
+            id: filename.replace('.md', ''),
+            title: frontmatter.title || defaultTitle,
+            category: frontmatter.category || 'news',
+            content: htmlContent,
+            excerpt: excerpt,
+            date: articleDate,
+            author: frontmatter.author || 'Capital Trend',
+            isCMS: true
+        };
+        
+        console.log(`Parsed article: ${article.title} (${article.date})`);
+        return article;
+        
+    } catch (error) {
+        console.error(`Error parsing markdown article ${filename}:`, error);
+        return null;
     }
-    
-    // Convert markdown to HTML
-    const htmlContent = marked.parse(markdownContent);
-    
-    // Create excerpt from HTML content
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
-    const textContent = tempDiv.textContent || tempDiv.innerText || '';
-    const excerpt = textContent.substring(0, 150) + (textContent.length > 150 ? '...' : '');
-    
-    return {
-        id: filename.replace('.md', ''),
-        title: frontmatter.title || filename.replace('.md', '').replace(/-/g, ' '),
-        category: frontmatter.category || 'news',
-        content: htmlContent,
-        excerpt: excerpt,
-        date: frontmatter.date || new Date().toISOString(),
-        author: frontmatter.author || 'Capital Trend',
-        isCMS: true
-    };
 }
 
 function openArticleModal(article) {
