@@ -8,4 +8,6 @@ author: Capital Trend
 ---
 T﻿est Succeed!
 
-(O﻿nly Alphabet)
+123
+abc
+가나다
