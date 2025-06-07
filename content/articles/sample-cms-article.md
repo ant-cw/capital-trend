@@ -1,5 +1,5 @@
 ---
-title: <공지>
+title: <<Notices>>
 excerpt:
 author: Capital Trend
 ---
