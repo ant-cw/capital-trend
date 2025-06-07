@@ -687,10 +687,10 @@ function loadSampleArticles() {
         const sampleArticles = [
             {
                 id: 1,
-                title: "Federal Reserve Signals Potential Rate Cuts Amid Economic Uncertainty",
+                title: "",
                 category: "policy",
-                content: "The Federal Reserve has indicated a potential shift in monetary policy as economic indicators show mixed signals. Fed Chair Jerome Powell emphasized the central bank's commitment to data-dependent decision making while maintaining flexibility in response to evolving economic conditions. Market analysts are closely watching inflation trends and employment data to predict the timing and magnitude of potential rate adjustments.",
-                excerpt: "The Federal Reserve has indicated a potential shift in monetary policy as economic indicators show mixed signals...",
+                content: "",
+                excerpt: "",
                 date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
                 attachments: []
             },
