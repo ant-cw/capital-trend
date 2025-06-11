@@ -3,6 +3,7 @@ layout: article
 title: Test Upload 5 (final)
 date: 2025-06-03T03:51:17.485Z
 category: markets
+thumbnail: /assets/uploads/1000011963.jpg
 excerpt: (excerpt) Test Succeed!
 author: Capital Trend
 ---
