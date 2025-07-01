@@ -1,4 +1,3 @@
-
 // Global state management
 let currentUser = null;
 let isAdmin = false;
