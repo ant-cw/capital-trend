@@ -25,9 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeApp() {
     loadStoredData();
-    setupEventListeners();
-    loadSampleArticles();
-    loadCMSArticles();
+    setupEventListeners();    loadCMSArticles();
     checkTheme();
     
     // Set up periodic refresh to check for new CMS articles (every 5 minutes)
@@ -682,49 +680,7 @@ function closeArticleModal() {
 }
 
 // Load sample articles for demonstration
-function loadSampleArticles() {
-    if (articles.length === 0) {
-        const sampleArticles = [
-            {
-                id: 1,
-                title: "",
-                content: "",
-                date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
-                attachments: []
-            },
-            {
-                id: 2,
-                title: "Tech Stocks Rally as AI Investment Surge Continues",
-                category: "technology",
-                content: "Technology stocks experienced significant gains as investors continue to pour capital into artificial intelligence and machine learning companies. Major tech giants reported strong quarterly earnings driven by AI-related revenue streams. The semiconductor sector, in particular, has seen substantial growth as demand for AI chips remains robust across multiple industries.",
-                excerpt: "Technology stocks experienced significant gains as investors continue to pour capital into artificial intelligence...",
-                date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-                attachments: []
-            },
-            {
-                id: 3,
-                title: "Global Energy Markets React to Geopolitical Tensions",
-                category: "markets",
-                content: "Energy commodity prices have shown increased volatility as geopolitical tensions in key producing regions continue to influence global supply chains. Oil and natural gas futures have experienced significant price swings, prompting strategic reserve releases from major consuming nations. Energy analysts emphasize the importance of diversified supply sources and renewable energy transitions in maintaining market stability.",
-                excerpt: "Energy commodity prices have shown increased volatility as geopolitical tensions in key producing regions...",
-                date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-                attachments: []
-            },
-            {
-                id: 4,
-                title: "Consumer Spending Patterns Shift Amid Inflation Concerns",
-                category: "analysis",
-                content: "Recent consumer spending data reveals significant shifts in purchasing behavior as households adapt to persistent inflationary pressures. Retail sales figures show increased spending on essential goods while discretionary purchases decline. Economic researchers note the importance of monitoring these trends for insights into consumer confidence and broader economic health.",
-                excerpt: "Recent consumer spending data reveals significant shifts in purchasing behavior as households adapt to persistent...",
-                date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
-                attachments: []
-            }
-        ];
-        
-        articles = sampleArticles;
-        saveData();
-    }
-}
+// function loadSampleArticles() { /* 샘플 기사 제거됨 */ }
 
 // Utility functions
 function formatDate(dateString) {
@@ -832,4 +788,3 @@ if (typeof module !== 'undefined' && module.exports) {
         sendVerification
     };
 }
-
