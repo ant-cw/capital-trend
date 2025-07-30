@@ -904,6 +904,16 @@ body {
     .article-modal-body h1 {
         font-size: 1.5rem;
     }
+
+    /* 메뉴바 자간 및 글자 크기 조절 */
+    .nav-list {
+      gap: 0.5rem !important;  /* 메뉴 간격 줄임 */
+      font-size: 0.9rem;       /* 글자 크기 줄임 */
+    }
+
+    .nav-list li {
+      padding: 0.2rem 0.4rem;  /* 메뉴 항목 패딩 줄임 */
+    }
 }
 
 /* Utility Classes */
