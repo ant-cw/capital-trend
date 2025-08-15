@@ -561,7 +561,7 @@ body {
 ----------------------------- */
 @media (max-width: 768px) {
     .header .container {
-        flex-direction: column;
+        flex-direction: row;
         gap: 1rem;
     }
     
