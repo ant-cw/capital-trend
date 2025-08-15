@@ -731,27 +731,32 @@ body {
         padding: 0.2rem 0.4rem;  /* 메뉴 항목 패딩 줄임 */
     }
 
-    /* 헤더 로고/제목/태그라인 간격 조정 */
+    /* 모바일: 로고 + 제목 + 태그라인 한 줄 배치 */
     .header .container {
-        flex-wrap: wrap; /* 한 줄에서 두 줄로 재배치 */
-        justify-content: flex-start; /* 왼쪽 정렬 */
+        flex-wrap: nowrap; /* 한 줄 유지 */
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: auto; /* 혹시 길면 가로 스크롤 */
+        white-space: nowrap; /* 줄바꿈 방지 */
     }
 
     .logo {
         display: flex;
         align-items: center;
-        gap: 0.3rem; /* 로고와 제목 사이 간격 줄임 */
+        gap: 0.3rem;
     }
 
     .logo h1 {
-        font-size: 1.3rem; /* 제목 크기 축소 */
-        margin: 0; /* 여백 제거 */
+        font-size: 1.2rem; /* 모바일에 맞춰 제목 크기 축소 */
+        margin: 0;
+        display: inline; /* 줄바꿈 방지 */
     }
 
     .tagline {
-        margin-left: 0; /* 왼쪽 마진 제거 */
-        font-size: 0.9rem;
-        line-height: 1.2;
-        margin-top: 2px; /* 위쪽 간격 최소화 */
+        display: inline; /* 한 줄 유지 */
+        margin-left: 0.4rem; /* 제목과 약간 띄움 */
+        font-size: 0.85rem;
+        line-height: 1;
+        color: var(--text-secondary);
     }
 }
