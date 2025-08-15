@@ -647,6 +647,9 @@ body {
         color: var(--text-secondary);
         white-space: nowrap;        /* 줄바꿈 방지 */
     }
+    .header .tagline {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
